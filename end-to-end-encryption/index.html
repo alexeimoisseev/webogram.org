@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="keywords" content="telegram, telegram web, webogram, end-to-end encryption">
+    <link rel="canonical" href="https://webogram.org/end-to-end-encryption/" />
+
+    <title>End-to-end encryption in Telegram — what it means</title>
+    <style>
+        :root{--accent:#2a8af7;--muted:#6b7280;--max:900px}
+        html,body{height:100%}
+        body{font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial; margin:0; color:#111827; background:#fff; -webkit-font-smoothing:antialiased}
+        header{border-bottom:1px solid #eef2f7}
+        .wrap{max-width:var(--max);margin:36px auto;padding:24px}
+        h1{font-size:28px;margin:8px 0}
+        p.lead{color:var(--muted);margin-top:0}
+        .meta{display:flex;gap:12px;align-items:center;color:var(--muted);font-size:14px;margin-bottom:18px}
+        a{color:var(--accent);text-decoration:none}
+        a:hover{text-decoration:underline}
+        section{margin:22px 0}
+        h2{font-size:18px;margin:12px 0}
+        ul{line-height:1.6}
+        .callout{background:#f8fbff;border:1px solid #e8f3ff;padding:14px;border-radius:8px;color:#0b2b4a}
+        .muted{color:var(--muted)}
+        pre{background:#f7f9fc;padding:12px;border-radius:6px;overflow:auto}
+        footer{margin-top:36px;color:var(--muted);font-size:13px}
+        @media (max-width:640px){.wrap{margin:18px;padding:16px}}
+    </style>
+</head>
+<body>
+<header>
+    <div class="wrap">
+        <h1>End‑to‑end encryption in Telegram: what it means — and what it doesn’t</h1>
+    </div>
+</header>
+
+<main class="wrap">
+
+    <section>
+        <h2>Quick summary</h2>
+        <p class="muted">End‑to‑end encryption (E2EE) means that only the communicating devices (the sender and the receiver) can read the message contents. Telegram implements E2EE for <strong>Secret Chats</strong> and for voice/video calls. Most regular cloud chats on Telegram (the default chat type) are <em>not</em> end‑to‑end encrypted; they are encrypted between your device and Telegram's servers, then stored on Telegram's servers so you can access chats from multiple devices.</p>
+    </section>
+
+    <section>
+        <h2>What is end‑to‑end encryption (E2EE)?</h2>
+        <p>With E2EE, plaintext message content is encrypted on the sender’s device and can only be decrypted on the intended recipient’s device. Even the service operator (the server) cannot decrypt those messages because they do not hold the decryption keys.</p>
+        <div class="callout">
+            <strong>A short analogy:</strong> imagine putting a letter into a sealed envelope that only your friend holds the key to. The postal service can deliver it but cannot read it.
+        </div>
+    </section>
+
+    <section>
+        <h2>Where Telegram uses E2EE</h2>
+        <ul>
+            <li><strong>Secret Chats:</strong> 1‑to‑1 chats that are end‑to‑end encrypted, device‑specific (not stored on Telegram’s cloud) and offer extra features such as message self‑destruct timers.</li>
+            <li><strong>Voice and video calls:</strong> These use E2EE so voice/video payloads are only available to endpoints.</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>Where Telegram does <em>not</em> use E2EE</h2>
+        <ul>
+            <li><strong>Cloud Chats (default):</strong> Most private chats, group chats, and channels are stored on Telegram's servers and are encrypted in transit and at rest on their servers, but are not end‑to‑end encrypted. This enables features like multi‑device sync and message search.</li>
+            <li><strong>Groups and channels:</strong> Group chats and channels are not E2EE. Members (and Telegram) have access to message data on the server side appropriate to the platform's design.</li>
+            <li><strong>Backups and exports:</strong> If you export chats or use cloud backups, those copies are not protected by Telegram’s Secret Chat E2EE unless you encrypt them yourself.</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>Important practical differences</h2>
+        <ul>
+            <li><strong>Syncing across devices:</strong> Cloud chats are stored on Telegram’s servers so you can read the same chat on phone, tablet, and web. Secret Chats are device‑specific and <em>do not</em> sync.</li>
+            <li><strong>Accessibility in web/desktop clients:</strong> Historically, Secret Chats are supported only on mobile apps (iOS/Android) and are not available in some web/desktop clients. That means if you rely on Telegram Web you will usually be using non‑E2EE cloud chats.</li>
+            <li><strong>Search, media indexing, and bots:</strong> These features require server‑side access. They are possible with cloud chats but would be limited or impossible with strict E2EE across every conversation.</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>How Telegram implements E2EE (high level)</h2>
+        <p class="muted">This is a simplified overview — if you want a deep protocol walkthrough, consult the technical documentation.</p>
+        <ol>
+            <li>Clients perform a cryptographic key exchange so each side has shared secrets.</li>
+            <li>Messages are encrypted locally with those keys before being sent.</li>
+            <li>Only the recipient's device (holding the corresponding key) can decrypt the message.</li>
+        </ol>
+        <pre>Sender device --(encrypted)--> Telegram server --> recipient device (only recipient can decrypt)</pre>
+    </section>
+
+    <section>
+        <h2>Can an unofficial web instance read messages?</h2>
+        <p>Any client that you run (official or not) has access to decrypted messages on the device that runs the client. That means a web deployment of the Telegram Web client will have access to the chat data your browser session can access. If you use an unmodified official client build and serve it over HTTPS from your domain, the client code itself is the same as the official implementation. Still, users should only log in if they trust the deployment operator.</p>
+    </section>
+
+    <section>
+        <h2>How to ensure your chats are private</h2>
+        <ul>
+            <li>Use Secret Chats for conversations that require the strongest privacy guarantees and avoid using web/desktop for those specific chats if those clients don’t support Secret Chats.</li>
+            <li>Enable two‑step verification (a password in addition to SMS/login code) to protect your account from unauthorized logins.</li>
+            <li>Prefer official clients from trusted sources; if you use a third‑party or self‑hosted web instance, verify the source code and serve it over HTTPS.</li>
+            <li>Avoid exporting unencrypted backups to shared or cloud storage unless you encrypt them yourself.</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>How to verify a Secret Chat is E2EE</h2>
+        <p class="muted">Most modern secure messaging apps provide a way to compare a short fingerprint or key. In Telegram's Secret Chats, you can compare the provided key fingerprint with the recipient — if they match, the chat is protected end‑to‑end.</p>
+        <pre>// Typical verification step (conceptual)
+1. Open the Secret Chat's info on both devices
+2. Compare the shown key/fingerprint (visually or via QR)
+3. If they match, the session is authenticated and E2EE is intact
+</pre>
+    </section>
+
+    <section>
+        <h2>Common misconceptions</h2>
+        <ul>
+            <li><strong>"Telegram is fully E2EE by default":</strong> Not true. Default cloud chats are server‑side and offer convenience features at the cost of the strictest E2EE guarantees.</li>
+            <li><strong>"If I use web client, I’m always unsafe":</strong> Not necessarily. Web clients can be secure if served honestly and kept up to date, but they often do not support Secret Chats.</li>
+            <li><strong>"Bots are private":</strong> Bots run server‑side and can access messages they receive; treat them accordingly.</li>
+        </ul>
+    </section>
+
+</main>
+</body>
+</html>
